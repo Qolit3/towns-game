@@ -1,8 +1,14 @@
+import Message from "@/ui/message";
 import formattedTime from "@/utils/func";
+import { towns } from "@/utils/towns";
 import { useEffect, useState } from "react";
 
+
 export default function Game() {
-  const [timeLeft, setTimeLeft] = useState(120);
+  const [timeLeft, setTimeLeft] = useState<number>(120);
+  const [messages, setMessages] = useState<{isYour: boolean, town: string}[]>([]);
+  const [inputValue, setInputValue] = useState<string>('');
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (!timeLeft) return;
@@ -13,6 +19,23 @@ export default function Game() {
 
     return () => clearInterval(intervalId);
   }, [timeLeft]);
+
+  const buttonHandler = () => {
+    setMessages([...messages, {isYour: true, town: inputValue}]);
+    setTimeLeft(120);
+    setInputValue('');
+    setIsDisabled(true);
+  }
+
+  const inputHandle = (text: string) => {
+    setInputValue(text);
+    
+    const searchResult = towns.find((item) => item.name === text)
+    
+    if(searchResult) {      
+      setIsDisabled(false)
+    }
+  }
   
   return(
     <main
@@ -41,13 +64,30 @@ export default function Game() {
           </div>
         </div>
         <div>
-          <p>
-            Первый участник вспоминает города...
-          </p>
+          {messages.length !== 0 ? 
+              messages.map((item) => {
+                return <Message isYour={item.isYour} town={item.town} />
+              })
+            : 
+              <p>
+                Ожидаю первого игрока
+              </p>
+          }
         </div>
+        
         <div>
-          <input type="text" />
-          <button />
+          <input
+            value={inputValue}
+            type="text"
+            onChange={(event) => inputHandle(event.target.value)}  
+          />
+          <button
+            onClick={buttonHandler}
+            type="button"
+            disabled={isDisabled}
+          >
+            Отправить
+          </button>
         </div>
       </div>
     </main>
