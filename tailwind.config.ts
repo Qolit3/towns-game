@@ -30,6 +30,7 @@ const config: Config = {
             12: '12px',
             14: '14px',
             16: '16px',
+            17: '17px',
             20: '20px',
             24: '24px',
             28: '28px',
@@ -47,6 +48,8 @@ const config: Config = {
             80: '80px',
             96: '96px',
             126: '126px',
+            576: '576px',
+            464: '464px',
   },
     fontSize: {
            base: ['14px', '21px'],
