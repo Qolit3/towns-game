@@ -30,10 +30,41 @@ export default function Game() {
   const inputHandle = (text: string) => {
     setInputValue(text);
     
+    // Проверки на существование, конца и начала и использование.
+
     const searchResult = towns.find((item) => item.name === text)
+    const isUsed = messages.find((item) => item.town === text)
     
-    if(searchResult) {      
-      setIsDisabled(false)
+    // Переписать и вынести в отдельное место
+
+    if(searchResult) {
+
+      if(isUsed) {
+
+        console.log('Уже было');
+      } else {
+        if(messages.length) {  
+
+          const lastTown = messages[messages.length - 1].town
+          let lastTownLetter = lastTown[lastTown.length - 1]
+  
+          // Если последняя буква ъ, ы или ь, то можно начать с любой
+          
+          if (lastTownLetter === 'ъ' || lastTownLetter === 'ы' || lastTownLetter === 'ь') {
+            setIsDisabled(false)
+          } else {
+            const isLastLetterMatche = lastTownLetter === text[0].toLocaleLowerCase()
+            ? true
+            : false;  
+          
+            if(isLastLetterMatche) {          
+              setIsDisabled(false)
+            }
+          }
+        } else {
+          setIsDisabled(false)
+        }
+      }
     }
   }
   
