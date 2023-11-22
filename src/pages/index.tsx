@@ -38,7 +38,7 @@ export default function Home() {
           </ul> 
           <a
             className={`text-lg bg-tg-violet-600 rounded-4 mt-24 mx-auto pt-8 text-center  text-tg-white w-126 h-40 block`}
-            href=""
+            href="/game"
           >
             Начать игру
           </a>
