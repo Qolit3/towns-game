@@ -6,9 +6,10 @@ import { useEffect, useState } from "react";
 
 export default function Game() {
   const [timeLeft, setTimeLeft] = useState<number>(120);
-  const [messages, setMessages] = useState<{isYour: boolean, town: string}[]>([]);
+  const [messages, setMessages] = useState<{isPlayer: boolean, town: string}[]>([]);
   const [inputValue, setInputValue] = useState<string>('');
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
+  const [isBotOrder, setIsBotOrder] = useState<boolean>(false);
 
   useEffect(() => {
     if (!timeLeft) return;
@@ -21,10 +22,37 @@ export default function Game() {
   }, [timeLeft]);
 
   const buttonHandler = () => {
-    setMessages([...messages, {isYour: true, town: inputValue}]);
+    setMessages([...messages, {isPlayer: true, town: inputValue}]);
     setTimeLeft(120);
     setInputValue('');
     setIsDisabled(true);
+    setIsBotOrder(true);
+  }
+
+  useEffect(() => {
+    if(isBotOrder) {
+      const defaultTime = 1 + Math.floor(3 * Math.random() * (messages.length + 1));
+      if(defaultTime > timeLeft) {
+        setTimeout(() => alert("Противник проиграл"), 120000);
+      } else {
+        setTimeout(() => bot(messages[messages.length - 1].town), defaultTime*1000)
+      }
+    }
+  }, [isBotOrder])
+
+  const bot = (town: string) => {
+    const answersArr: string[] = []
+    towns.forEach((item) => {
+      if(town[town.length - 1] === item.name[0].toLowerCase()) {
+        answersArr.push(item.name)
+      }
+    })
+
+    const answerIndex = Math.floor(Math.random() * answersArr.length);
+    setMessages([...messages, {isPlayer: false, town: answersArr[answerIndex]}])
+    setIsBotOrder(false);
+    setTimeLeft(120);
+    setIsDisabled(false);
   }
 
   const inputHandle = (text: string) => {
@@ -97,7 +125,7 @@ export default function Game() {
         <div>
           {messages.length !== 0 ? 
               messages.map((item) => {
-                return <Message isYour={item.isYour} town={item.town} />
+                return <Message isYour={item.isPlayer} town={item.town} />
               })
             : 
               <p>
@@ -106,8 +134,14 @@ export default function Game() {
           }
         </div>
         
-        <div>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            buttonHandler();
+          }}
+        >
           <input
+            disabled={isBotOrder}
             value={inputValue}
             type="text"
             onChange={(event) => inputHandle(event.target.value)}  
@@ -119,7 +153,7 @@ export default function Game() {
           >
             Отправить
           </button>
-        </div>
+        </form>
       </div>
     </main>
   )
